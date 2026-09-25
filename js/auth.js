@@ -1,4 +1,4 @@
-// Authentication & User Management Logic
+
 const auth = {
   init() {
     document.getElementById('login-form').addEventListener('submit', (e) => this.login(e));
