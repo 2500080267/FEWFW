@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeatFlow - Music Streaming App</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="logo">
+      <span class="logo-icon">🎵</span> BeatFlow
+    </div>
+    <nav class="nav-links" id="nav-links">
+      <!-- Dynamic links injected by JS -->
+    </nav>
+    <div class="auth-buttons" id="auth-buttons">
+      <!-- Auth state buttons injected by JS -->
+    </div>
+  </header>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" id="close-auth">&times;</span>
+      
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <h2>Welcome Back</h2>
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" required placeholder="user@music.com">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary">Log In</button>
+        <p class="auth-switch">Don't have an account? <a href="#" id="switch-to-signup">Sign Up</a></p>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" class="auth-form hidden">
+        <h2>Create Account</h2>
+        <div class="form-group">
+          <label for="signup-name">Full Name</label>
+          <input type="text" id="signup-name" required placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label for="signup-email">Email</label>
+          <input type="email" id="signup-email" required placeholder="user@music.com">
+        </div>
+        <div class="form-group">
+          <label for="signup-password">Password</label>
+          <input type="password" id="signup-password" required placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label for="signup-role">Account Type</label>
+          <select id="signup-role">
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+        <p class="auth-switch">Already have an account? <a href="#" id="switch-to-login">Log In</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main View Container -->
+  <main id="app-container" class="main-layout">
+    
+    <!-- Hero / Landing View -->
+    <section id="view-landing" class="view">
+      <div class="hero-content">
+        <h1>Stream Unlimited Music On Demand</h1>
+        <p>Discover new tracks, create custom playlists, leave reviews, and download songs for offline listening.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-large" onclick="app.openAuthModal('signup')">Get Started Free</button>
+          <button class="btn btn-secondary btn-large" onclick="app.openAuthModal('login')">Log In</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- User Module View -->
+    <section id="view-user" class="view hidden">
+      <aside class="sidebar">
+        <ul class="sidebar-menu">
+          <li class="active" onclick="userModule.switchTab('discover')">🎧 Discover</li>
+          <li onclick="userModule.switchTab('playlists')">📁 My Playlists</li>
+          <li onclick="userModule.switchTab('offline')">⬇️ Offline Tracks</li>
+          <li onclick="userModule.switchTab('recommendations')">✨ Recommendations</li>
+        </ul>
+      </aside>
+
+      <div class="content-area">
+        <!-- Discover Sub-View -->
+        <div id="subview-discover" class="subview">
+          <div class="search-bar-container">
+            <input type="text" id="search-input" placeholder="Search by Track Name, Artist, or Album..." oninput="userModule.handleSearch()">
+            <select id="genre-filter" onchange="userModule.handleSearch()">
+              <option value="all">All Genres</option>
+              <option value="Pop">Pop</option>
+              <option value="Rock">Rock</option>
+              <option value="Electronic">Electronic</option>
+              <option value="Lo-Fi">Lo-Fi</option>
+            </select>
+          </div>
+
+          <h2>Featured Tracks</h2>
+          <div id="track-grid" class="grid-container"></div>
+        </div>
+
+        <!-- Playlists Sub-View -->
+        <div id="subview-playlists" class="subview hidden">
+          <h2>My Playlists</h2>
+          <div class="playlist-create">
+            <input type="text" id="new-playlist-name" placeholder="Playlist Name...">
+            <button class="btn btn-primary" onclick="userModule.createPlaylist()">Create Playlist</button>
+          </div>
+          <div id="playlist-container" class="playlist-list"></div>
+        </div>
+
+        <!-- Offline Sub-View -->
+        <div id="subview-offline" class="subview hidden">
+          <h2>Offline Saved Tracks</h2>
+          <p class="subtitle">Tracks downloaded to your local storage for offline streaming.</p>
+          <div id="offline-grid" class="grid-container"></div>
+        </div>
+
+        <!-- Recommendations Sub-View -->
+        <div id="subview-recommendations" class="subview hidden">
+          <h2>Recommended for You</h2>
+          <p class="subtitle">Handpicked tracks based on top ratings and popular genres.</p>
+          <div id="recommendations-grid" class="grid-container"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Admin Module View -->
+    <section id="view-admin" class="view hidden">
+      <aside class="sidebar">
+        <ul class="sidebar-menu">
+          <li class="active" onclick="adminModule.switchTab('dashboard')">📊 Dashboard</li>
+          <li onclick="adminModule.switchTab('manage-tracks')">🎵 Track Management</li>
+          <li onclick="adminModule.switchTab('manage-users')">👥 User Management</li>
+        </ul>
+      </aside>
+
+      <div class="content-area">
+        <!-- Dashboard Sub-View -->
+        <div id="admin-subview-dashboard" class="subview">
+          <h2>Admin Dashboard Overview</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <h3 id="stat-tracks">0</h3>
+              <p>Total Tracks</p>
+            </div>
+            <div class="stat-card">
+              <h3 id="stat-users">0</h3>
+              <p>Registered Users</p>
+            </div>
+            <div class="stat-card">
+              <h3 id="stat-reviews">0</h3>
+              <p>Total Reviews</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Track Management Sub-View -->
+        <div id="admin-subview-manage-tracks" class="subview hidden">
+          <h2>Track Catalog Management</h2>
+          <form id="add-track-form" onsubmit="adminModule.handleAddTrack(event)" class="card-form">
+            <h3>Add New Track</h3>
+            <div class="form-row">
+              <input type="text" id="track-title" placeholder="Track Title" required>
+              <input type="text" id="track-artist" placeholder="Artist Name" required>
+            </div>
+            <div class="form-row">
+              <input type="text" id="track-album" placeholder="Album Name" required>
+              <select id="track-genre" required>
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="Electronic">Electronic</option>
+                <option value="Lo-Fi">Lo-Fi</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <input type="url" id="track-cover" placeholder="Cover Image URL" required>
+              <input type="url" id="track-audio" placeholder="Audio MP3 URL" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Track</button>
+          </form>
+
+          <h3>Existing Library</h3>
+          <div id="admin-track-list" class="admin-table-container"></div>
+        </div>
+
+        <!-- User Management Sub-View -->
+        <div id="admin-subview-manage-users" class="subview hidden">
+          <h2>User Accounts Management</h2>
+          <div id="admin-user-list" class="admin-table-container"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Track Details & Review Modal -->
+  <div id="review-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" onclick="userModule.closeReviewModal()">&times;</span>
+      <h2 id="review-track-title">Track Details</h2>
+      <div id="reviews-list-container" class="reviews-box"></div>
+      
+      <form id="review-form" onsubmit="userModule.submitReview(event)" class="review-form">
+        <h3>Add Your Review</h3>
+        <div class="form-group">
+          <label>Rating:</label>
+          <select id="review-rating" required>
+            <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+            <option value="4">⭐⭐⭐⭐ (4/5)</option>
+            <option value="3">⭐⭐⭐ (3/5)</option>
+            <option value="2">⭐⭐ (2/5)</option>
+            <option value="1">⭐ (1/5)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Comment:</label>
+          <textarea id="review-comment" required placeholder="Write your thoughts about this track..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Audio Player Dock Bar -->
+  <footer id="player-bar" class="player-bar hidden">
+    <div class="player-info">
+      <img id="player-img" src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=100" alt="Track Cover">
+      <div>
+        <h4 id="player-title">Select a Song</h4>
+        <p id="player-artist">Artist</p>
+      </div>
+    </div>
+    <div class="player-controls">
+      <audio id="audio-element" controls style="width: 100%; max-width: 500px;"></audio>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/user.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
