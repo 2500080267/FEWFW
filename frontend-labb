@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Dashboard</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial;
+            background: lightblue;
+            margin-top: 100px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="loginPage">
+    <h2>Login</h2>
+    <input id="user" placeholder="Username"><br>
+    <input id="pass" type="password" placeholder="Password"><br>
+    <button onclick="login()">Login</button>
+</div>
+
+<div id="dashboard" style="display:none">
+    <h2>Dashboard</h2>
+    <h3 id="welcome"></h3>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+    localStorage.setItem("username", "admin");
+    localStorage.setItem("password", "1234");
+
+    function login() {
+        let u = document.getElementById("user").value;
+        let p = document.getElementById("pass").value;
+
+        if (u === localStorage.getItem("username") &&
+            p === localStorage.getItem("password")) {
+
+            sessionStorage.setItem("user", u);
+            showDashboard();
+
+        } else {
+            alert("Invalid Login");
+        }
+    }
+
+    function showDashboard() {
+        let u = sessionStorage.getItem("user");
+
+        if (u) {
+            document.getElementById("loginPage").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+            document.getElementById("welcome").innerText = "Welcome " + u;
+        }
+    }
+
+    function logout() {
+        sessionStorage.removeItem("user");
+        document.getElementById("dashboard").style.display = "none";
+        document.getElementById("loginPage").style.display = "block";
+    }
+
+    showDashboard();
+</script>
+
+</body>
+</html>
